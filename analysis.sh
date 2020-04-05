@@ -4,7 +4,7 @@ function create_database() {
 	database_filename="$1"
 
 	rm -rf "$database_filename"
-	for table in boletim caso; do
+	for table in boletim caso caso-full; do
 		echo "Downloading $table"
 		filename="data/${table}.csv.gz"
 		url="https://data.brasil.io/dataset/covid19/${table}.csv.gz"
