@@ -4,16 +4,21 @@ function create_database() {
 	database_filename="$1"
 
 	rm -rf "$database_filename"
-	for table in boletim caso caso-full; do
-		echo "Downloading $table"
-		filename="data/${table}.csv.gz"
-		url="https://data.brasil.io/dataset/covid19/${table}.csv.gz"
-		rm -rf "$filename"
-		wget -q -c -t 0 -O "$filename" "$url"
+	for table in boletim caso caso-full populacao-estimada-2019; do
+		filename="data/${table}.csv"
+		if [ -e "$filename" ]; then
+			echo "Using already downloaded $filename as $table"
+		elif [ -e "${filename}.gz" ]; then
+			filename="${filename}.gz"
+			echo "Using already downloaded $filename as $table"
+		else
+			echo "Downloading $table"
+			url="https://data.brasil.io/dataset/covid19/${table}.csv.gz"
+			rm -rf "$filename"
+			wget -q -c -t 0 -O "$filename" "$url"
+		fi
 		rows csv2sqlite --schemas=schema/${table}.csv "$filename" "$database_filename"
 	done
-	population="populacao-estimada-2019.csv"
-	rows csv2sqlite --schemas=schema/$population data/$population $database_filename
 }
 
 function execute_sql_file_no_output() {
